@@ -1,0 +1,78 @@
+#!/usr/bin/env python
+
+from __future__ import division
+import numpy as np
+import os
+import sys
+import json 
+
+DIRNAME = os.path.dirname(os.path.realpath(__file__))
+PRESENT = 1
+NOT_PRESENT = 0
+
+def parse_csv_file(f):
+    f.readline() # skip first line (header)
+
+    frame_objects = []
+    for line in f:
+        frame_objects.append( eval(line.split(',', 1)[1].replace('"', '')) )
+
+    return frame_objects
+
+def label_indicator(frame_objects, label):
+    for frame_object in frame_objects:
+        if label in frame_object.values():
+            return PRESENT
+
+    return NOT_PRESENT
+
+def non_overlapping_window(indicator_array, window_size, window_thres):
+    assert( isinstance(indicator_array, type(np.array(1, dtype=int))) )
+    rolling_sum = np.cumsum(indicator_array, dtype=int)
+    rolling_sum[window_size:] = rolling_sum[window_size:] - rolling_sum[:-window_size]
+    rolling_sum = rolling_sum[window_size:]
+
+    smoothed_indicator = np.array(rolling_sum[0::window_size] >= window_thres, dtype=int)
+
+    return smoothed_indicator
+
+################################################################################
+# begin the script
+################################################################################
+if len(sys.argv) != 6:
+    sys.stderr.write('Usage:\n\t' + os.path.basename(sys.argv[0]) + ' LABEL WINDOW_SIZE WINDOW_THRES TRUTH_CSV OTHER_CSV\n\n')
+    sys.stderr.write('Description:\n\tComputes the accuracy (fn and fp) for the labels\n')
+    sys.stderr.write('\tin OTHER_CSV based on the labels in TRUTH_CSV.\n')
+    sys.stderr.write('\tWINDOW_SIZE is the number of frames in windows and\n')
+    sys.stderr.write('\tWINDOW_THRES is the number of labels in a window needed\n')
+    sys.stderr.write('\tto contain the labelled object to activate the window.\n\n')
+    sys.exit(1)
+
+label = sys.argv[1]
+window_size = int(sys.argv[2])
+window_thres = int(sys.argv[3])
+
+truth_frames = None
+other_frames = None
+with open(sys.argv[4], 'r') as truth_csv_file:
+    with open(sys.argv[5], 'r') as other_csv_file:
+        truth_frames = parse_csv_file(truth_csv_file)
+        other_frames = parse_csv_file(other_csv_file)
+
+truth_indicator = np.asarray( map(lambda x: label_indicator(x, label), truth_frames) )
+other_indicator = np.asarray( map(lambda x: label_indicator(x, label), other_frames) )
+
+windowed_truth_indicator = non_overlapping_window(truth_indicator, window_size, window_thres)
+windowed_other_indicator = non_overlapping_window(other_indicator, window_size, window_thres)
+
+diff = windowed_other_indicator - windowed_truth_indicator
+diff_fp = diff == 1
+diff_fn = diff == -1
+
+stats = dict()
+stats['truth_csv'] = sys.argv[4]
+stats['other_csv'] = sys.argv[5]
+stats['false_positive_rate'] = np.sum(diff_fp) / len(diff)
+stats['false_negative_rate'] = np.sum(diff_fn) / len(diff)
+
+sys.stdout.write( json.dumps(stats, indent=4, sort_keys=True) + '\n')

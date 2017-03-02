@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+
+from __future__ import division
+import subprocess as sub
+import json as json
+import os
+import sys
+
+DIRNAME = os.path.dirname(os.path.realpath(__file__))
+
+def seconds_to_timestr(seconds):
+    hours = int( seconds / 3600 )
+    minutes = int ( (seconds - 3600*hours) / 60 )
+    seconds = int(seconds - 3600*hours - 60*minutes)
+
+    return '{}:{}:{}'.format(str(hours).zfill(2), 
+                             str(minutes).zfill(2), 
+                             str(seconds).zfill(2))
+
+def get_metadata(json_str):
+    j = json.loads(json_str)
+    stream = j['streams'][0]
+    video = j['format']
+    
+    metadata = dict()
+    metadata['name'] = video['filename']
+    metadata['height'] = stream['height']
+    metadata['width'] = stream['width']
+    metadata['aspect_ratio'] = stream['display_aspect_ratio']
+    metadata['duration'] = seconds_to_timestr( float(video['duration']) )
+    metadata['duration_seconds'] = video['duration']
+    metadata['nframe'] = stream['nb_frames']
+    metadata['fps'] = str( eval(stream['r_frame_rate']) )
+    metadata['fps_average'] = str( eval(stream['avg_frame_rate']) )
+    metadata['codec'] = stream['codec_name']
+    metadata['file_size'] = video['size']
+    metadata['bit_rate'] = video['bit_rate']
+
+    return metadata
+
+################################################################################
+# begin the script
+################################################################################
+if len(sys.argv) < 2:
+    sys.stderr.write('Usage:\n\t' + sys.argv[0] + ' VIDEO_FILE [VIDEO_FILE ...]\n\n')
+    sys.stderr.write('Description:\n\tExtracts metadata about video(s). Outputs json to STDOUT.\n\n')
+    sys.exit(1)
+
+# check if all inputs are videos and exist
+for filename in sys.argv[1:]:
+    if '.mp4' not in filename:
+        sys.stderr.write('Error: {}. All inputs must be .mp4 files.'.format(filename) + '\n\n')
+        sys.exit(1)
+
+    if not os.path.exists(filename):
+        sys.stderr.write('Error: {} does not exist.'.format(filename) + '\n\n')
+        sys.exit(1)        
+        
+# convert to json
+video_metadata = []
+for video in sys.argv[1:]:
+    cmd = 'ffprobe -v quiet -print_format json -show_format -show_streams {}'.format(video)
+    sys.stderr.write(cmd+'\n')
+    ffprobe_json = sub.check_output(cmd, shell=True)
+    video_metadata.append(get_metadata(ffprobe_json))
+
+sys.stdout.write(json.dumps(video_metadata, indent=4) + '\n')

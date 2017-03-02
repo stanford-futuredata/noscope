@@ -1,0 +1,115 @@
+#!/usr/bin/env python
+
+from __future__ import division
+import numpy as np
+import os
+import sys
+import json 
+
+DIRNAME = os.path.dirname(os.path.realpath(__file__))
+PRESENT = 1
+NOT_PRESENT = 0
+
+def parse_csv_file(f):
+    f.readline() # skip first line (header)
+
+    frame_objects = []
+    for line in f:
+        frame_objects.append( eval(line.split(',', 1)[1].replace('"', '')) )
+
+    return frame_objects
+
+def label_indicator(frame_objects, label):
+    for frame_object in frame_objects:
+        if label in frame_object.values():
+            return PRESENT
+
+    return NOT_PRESENT
+
+def get_statistics(indicator_array):
+    stats = dict()
+    
+    # percentage of video with label (i.e. event)
+    num_one = np.sum(indicator_array)
+    num_zero = np.sum( np.logical_not(indicator_array) )
+    assert(num_one + num_zero == len(indicator_array))
+    
+    stats['num_frames'] = len(indicator_array)
+    stats['num_frames_with_label'] = num_one
+    stats['num_frames_without_label'] = num_zero
+    
+    # number of contiguous segments with label
+    diff = np.hstack( (indicator_array, np.zeros((1,))) ) - \
+           np.roll( np.hstack( (indicator_array, np.zeros((1,))) ), 1)
+    
+    num_events = np.sum( np.abs(diff) ) / 2
+    assert( num_events == int(num_events) )
+
+    stats['num_events'] = int(num_events)
+
+    # event length and event spacing
+    event_lens = []
+    event_spacing_lens = []
+    in_event = False
+    count = 0
+    for i in xrange(len(diff)):
+        if diff[i] == 0:
+            count += 1
+            continue
+            
+        if diff[i] == 1:
+            assert( not in_event )
+            event_spacing_lens.append(count)
+            count = 1
+            in_event = True
+            continue
+
+        if diff[i] == -1:
+            assert( in_event )
+            event_lens.append(count)
+            count = 1
+            in_event = False
+            continue
+            
+        assert( diff[i] == 0 or diff[i] == 1 or diff[i] == -1 )
+    
+    assert( diff[ len(diff) - 1 ] != 1 )
+    if diff[ len(diff) - 1 ] == 0:
+        event_spacing_lens.append(count - 1)
+        
+    stats['len_events'] = event_lens
+    stats['len_event_spaces'] = event_spacing_lens
+
+    event_lens_np = np.asarray(event_lens)
+    event_spacing_lens_np =  np.asarray(event_spacing_lens)
+
+    stats['average_len_events'] = np.average(event_lens_np)
+    stats['average_len_event_spaces'] = np.average(event_spacing_lens_np)
+
+    stats['median_len_events'] = np.median(event_lens_np)
+    stats['median_len_event_spaces'] = np.median(event_spacing_lens_np)
+
+    stats['variance_len_events'] = np.var(event_lens_np)
+    stats['variance_len_event_spaces'] = np.var(event_spacing_lens_np)
+    
+    return stats
+
+################################################################################
+# begin the script
+################################################################################
+if len(sys.argv) < 2:
+    sys.stderr.write('Usage:\n\t' + os.path.basename(sys.argv[0]) + ' LABEL [CSV_FILE]\n\n')
+    sys.stderr.write('Description:\n\tCollects statistics about the labels in a video.\n')
+    sys.stderr.write('\tOutputs results to STDOUT. If a CSV_FILE is not\n')
+    sys.stderr.write('\tspecified, the program will read form STDIN.\n\n')
+    sys.exit(1)
+
+label = sys.argv[1]
+video_csv_file = sys.stdin if len(sys.argv) < 3 else open(sys.argv[2], 'r')
+
+frames = parse_csv_file(video_csv_file)
+frames_indicator = np.asarray( map(lambda x: label_indicator(x, label), frames) )
+frames_stats = get_statistics(frames_indicator)
+
+# output the full report to file
+sys.stdout.write(json.dumps(frames_stats, sort_keys=True) + '\n')

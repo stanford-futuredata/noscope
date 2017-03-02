@@ -1,0 +1,72 @@
+--------------------------------------------------------------------------------
+- Accuracy and Optimizer Scripts
+--------------------------------------------------------------------------------
+
+Usage: noscope_accuracy.py label truth.csv other.csv
+
+       label = 'person' or 'car' or 'bus' # or some other label
+       truth.csv = 'elevator.mp4.csv' # the csv file
+       other.csv = '0k-350k.csv' # your output csv file
+
+The accuracy script will only check frames 250k - 350k for accuracy. 
+
+IMPORTANT: your other.csv file must be at least 350k lines long. Just output the
+confidences for the first 350k frames and things will work.
+
+================================================================================
+
+Usage: noscope_optimizer.py label truth.csv other.csv
+
+       label = 'person' or 'car' or 'bus' # or some other label
+       truth.csv = 'elevator.mp4.csv' # the csv file
+       other.csv = '0k-350k.csv' # your output csv file
+
+The optimizer script will only use frame 150k - 250k to compute the best 
+thresholds. As configured right now, the script will try to achieve a 1% false
+negative and 1% false positive rate. 
+
+IMPORTANT: your other.csv file must be at least 350k lines long. Just output the
+confidences for the first 350k frames and things will work.
+
+================================================================================
+
+Example
+
+Unzip the elevator.mp4.csv and 0k-350k.csv to use as examples.
+
+>$ ./noscope_accuracy.py person elevator.mp4.csv 0k-350k.csv
+WARNING: computing accuracy with respect to ground truth frames 250000 to 350000
+{
+    "accuracy": 0.9718056388722256,
+    "false_negative": 0.022151898734177215,
+    "false_positive": 0.028827037773359841,
+    "num_true_negatives": 3018,
+    "num_true_positives": 316,
+    "num_windows": 3334,
+    "window_size": 30,
+    "window_thres": 28
+}
+
+>$ ./noscope_optimizer.py person elevator.mp4.csv 0k-350k.csv
+WARNING: computing accuracy with respect to ground truth frames 150000 to 250000
+... NOTE: skipping some json output (you only care about the last one anyway)
+ {
+  "accuracy": 0.99340131973605283,
+  "false_negative": 0.0061349693251533744,
+  "false_positive": 0.006678383128295255,
+  "num_cnn_evals": 5302,
+  "num_diff_evals": 10000,
+  "num_true_negatives": 2845,
+  "num_true_positives": 489,
+  "num_windows": 3334,
+  "num_yolo_evals": 1242,
+  "optimizer_cost": 29620774,
+  "threshold_diff": 1.3872271382765531,
+  "threshold_lower_cnn": 0.0020043680061603204,
+  "threshold_skip_distance": 10,
+  "threshold_upper_cnn": 0.9979959927068397,
+  "window_size": 30,
+  "window_thres": 28
+ }
+]
+---best configuration at the bottom---

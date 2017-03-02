@@ -1,0 +1,13 @@
+#! /usr/bin/env python
+
+import imageio
+import sys
+
+if __name__ == '__main__':
+    for video_fname in sys.argv[1:]:
+        reader = imageio.get_reader(video_fname)
+        metadata = reader.get_meta_data()
+        del metadata['ffmpeg_version']
+        del metadata['plugin']
+        print video_fname, metadata
+        reader.close()
