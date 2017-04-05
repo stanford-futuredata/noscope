@@ -1,0 +1,21 @@
+*.depend
+
+*.ipynb_checkpoints
+*.swp
+# random files which file themselves in the repo
+*.avi
+*.png
+*.jpg
+*.mp4
+*.webm
+*.csv
+
+# setup.py files
+build
+dist
+noscope.egg-info
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
