@@ -7,3 +7,5 @@ from Models import *
 
 from Metrics import *
 from Learner import *
+
+from np_utils import *
