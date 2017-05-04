@@ -11,9 +11,6 @@ import os
 DIRNAME = os.path.dirname(os.path.realpath(__file__))
 POOL_SIZE = 48
 
-TRAIN_START_IDX = 150000
-TRAIN_END_IDX = 250000 # inclusive
-
 # TARGET_CNN_FALSE_NEGATIVE_RATE = None
 # TARGET_CNN_FALSE_POSITIVE_RATE = None
 # MAX_DIFF_FALSE_NEGATIVE_RATE = None
@@ -21,7 +18,9 @@ GRID_SIZE = 1000
 
 def cnn_param_grid_search(p):
     # unpack the params 
-    yolo_indicator, video_stats, diff_thres, diff_mask, cnn_confidences, cnn_confidences_range, TARGET_CNN_FALSE_NEGATIVE_RATE, TARGET_CNN_FALSE_POSITIVE_RATE, MAX_DIFF_FALSE_NEGATIVE_RATE = p
+    yolo_indicator, video_stats, diff_thres, diff_mask, cnn_confidences, cnn_confidences_range, \
+    TARGET_CNN_FALSE_NEGATIVE_RATE, TARGET_CNN_FALSE_POSITIVE_RATE, MAX_DIFF_FALSE_NEGATIVE_RATE, \
+    TRAIN_START_IDX, TRAIN_END_IDX = p
 
     # grid search over the cnn_confidences and get the accruacy dict from v.*
     thresholds = np.linspace(cnn_confidences_range[0], cnn_confidences_range[1], GRID_SIZE)
@@ -132,9 +131,9 @@ def runtime_estimator(params, TARGET_CNN_FALSE_NEGATIVE_RATE):
     return params
     
 def param_search(yolo_frames, noscope_stats, noscope_frames,
+                 TRAIN_START_IDX, TRAIN_END_IDX,
                  TARGET_CNN_FALSE_NEGATIVE_RATE, TARGET_CNN_FALSE_POSITIVE_RATE, MAX_DIFF_FALSE_NEGATIVE_RATE, 
                  diff_confidence_range, cnn_confidence_range):
-    
     # find all the thresholds for the diff filter that are less than the max
     yolo_indicator = np.asarray(v.window_yolo(yolo_frames))
 
@@ -192,9 +191,11 @@ def param_search(yolo_frames, noscope_stats, noscope_frames,
                   windowed_diff_confidences >= diff_confidences_grid[i],
                   windowed_cnn_confidences,
                   cnn_confidence_range,
-                  TARGET_CNN_FALSE_NEGATIVE_RATE, 
-                  TARGET_CNN_FALSE_POSITIVE_RATE, 
+                  TARGET_CNN_FALSE_NEGATIVE_RATE,
+                  TARGET_CNN_FALSE_POSITIVE_RATE,
                   MAX_DIFF_FALSE_NEGATIVE_RATE,
+                  TRAIN_START_IDX,
+                  TRAIN_END_IDX,
               ) for i in xrange(GRID_SIZE) ]
         
         cnn_grid_search_params += args
@@ -258,7 +259,10 @@ def param_search(yolo_frames, noscope_stats, noscope_frames,
 ################################################################################
 # begin the script
 ################################################################################
-def main(object_name, yolo_csv_filename, noscope_csv_filename, target_fn, target_fp):
+def main(object_name,
+         yolo_csv_filename, noscope_csv_filename,
+         target_fn, target_fp,
+         TRAIN_START_IDX, TRAIN_END_IDX):
     TARGET_CNN_FALSE_NEGATIVE_RATE = target_fn / 2.0
     TARGET_CNN_FALSE_POSITIVE_RATE = target_fp / 2.0
     MAX_DIFF_FALSE_NEGATIVE_RATE = target_fn / 2.0
@@ -271,10 +275,11 @@ def main(object_name, yolo_csv_filename, noscope_csv_filename, target_fn, target
     #print len(yolo_frames), len(noscope_frames)
     assert(len(yolo_frames) == len(noscope_frames)) # were the same number of frames read?
     
-    runtimes = param_search(yolo_frames, noscope_stats, noscope_frames, 
-                                  TARGET_CNN_FALSE_NEGATIVE_RATE, TARGET_CNN_FALSE_POSITIVE_RATE, MAX_DIFF_FALSE_NEGATIVE_RATE,
-                                  (noscope_stats['min_diff_confidence'], noscope_stats['max_diff_confidence']), 
-                                  (noscope_stats['min_cnn_confidence'], noscope_stats['max_cnn_confidence']))
+    runtimes = param_search(yolo_frames, noscope_stats, noscope_frames,
+                            TRAIN_START_IDX, TRAIN_END_IDX,
+                            TARGET_CNN_FALSE_NEGATIVE_RATE, TARGET_CNN_FALSE_POSITIVE_RATE, MAX_DIFF_FALSE_NEGATIVE_RATE,
+                            (noscope_stats['min_diff_confidence'], noscope_stats['max_diff_confidence']),
+                            (noscope_stats['min_cnn_confidence'], noscope_stats['max_cnn_confidence']))
     
     optimal_params = runtimes[0]
     return optimal_params

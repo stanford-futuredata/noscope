@@ -12,9 +12,6 @@ from collections import namedtuple
 
 DIRNAME = os.path.dirname(os.path.realpath(__file__))
 
-TEST_START_IDX = 250000
-TEST_END_IDX   = 550000 # inclusive
-
 YOLO_CONFIDENCE = 0.20
 SKIP_FRAME_STATUS = 0
 
@@ -91,7 +88,7 @@ def parse_yolo_csv(f, label, start, end):
     # print '\n'.join(map(str, frame_objects_final[1600:1630]))
     return frame_objects_final'''
     
-def parse_noscope_csv(f, label, start=TEST_START_IDX, end=TEST_END_IDX):
+def parse_noscope_csv(f, label, start, end):
     lines = f.read().strip().split('\n')
     metadata = lines[0]
 
@@ -269,7 +266,9 @@ def accuracy2str(results):
 ################################################################################
 # begin the script
 ################################################################################
-def main(object_name, yolo_csv_filename, noscope_csv_filename):
+def main(object_name,
+         TEST_START_IDX, TEST_END_IDX,
+         yolo_csv_filename, noscope_csv_filename):
 
     with open(yolo_csv_filename, 'r') as yolo:
         with open(noscope_csv_filename, 'r') as noscope:

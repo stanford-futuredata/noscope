@@ -71,9 +71,11 @@ TARGET_ERROR_RATES = [0.0, 0.005, 0.01, 0.015, 0.02, 0.03, 0.04, 0.05, 0.1, 0.25
 
 TRAIN_START_IDX = 150000
 TRAIN_LEN = 100000
+TRAIN_END_IDX = TRAIN_START_IDX + TRAIN_LEN
 
 TEST_START_IDX = 250000
 TEST_LEN = 300000
+TEST_END_IDX = TEST_START_IDX + TEST_LEN
 
 TF_DIRPREFIX = '/lfs/1/ddkang/noscope/tensorflow-noscope/'
 DATA_DIR_PREFIX = '/lfs/1/ddkang/noscope/data/'
@@ -254,10 +256,9 @@ for error_rate in TARGET_ERROR_RATES:
     for pipeline_path, cnn_path, dd in pipeline_paths:
         params = opt.main(
             label_name, 
-            truth_csv,
-            os.path.join(pipeline_path, train_csv_filename), 
-            error_rate, 
-            error_rate
+            truth_csv, os.path.join(pipeline_path, train_csv_filename),
+            error_rate, error_rate,
+            TRAIN_START_IDX, TRAIN_END_IDX
         )
 
         use_blocked = 0
@@ -331,7 +332,9 @@ for error_rate in TARGET_ERROR_RATES:
         print 'WARNING: using cached results! Skipping computation.'
 
     # compute the actual accuracy
-    accuracy = acc.main(label_name, truth_csv, test_csv_path)
+    accuracy = acc.main(label_name,
+                        TEST_START_IDX, TEST_END_IDX,
+                        truth_csv, test_csv_path)
     with open( os.path.join(test_path, 'accuracy.json'), 'w') as f:
         f.write( json.dumps(accuracy, sort_keys=True, indent=4) ) 
 
