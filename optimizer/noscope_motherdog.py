@@ -149,11 +149,11 @@ except:
 print "preparing the training data (for optimizer) and getting ground truth"
 yolo_label_num, pipelines = YOLO_LABELS[video_name]
 
-# train_csv_filename =  "train_" + str(TRAIN_START_IDX) + "_" + str(TRAIN_START_IDX+TRAIN_LEN) + ".csv"
-train_csv_filename = 'train_${START_FRAME}_${END_FRAME}.csv'
+train_csv_filename =  "train_" + str(TRAIN_START_IDX) + "_" + str(TRAIN_START_IDX+TRAIN_LEN) + ".csv"
+train_csv_str = 'train_${START_FRAME}_${END_FRAME}.csv'
 
-# train_log_filename = "train_" + str(TRAIN_START_IDX) + "_" + str(TRAIN_START_IDX+TRAIN_LEN) + ".log"
-train_log_filename = 'train_${START_FRAME}_${END_FRAME}.log'
+train_log_filename = "train_" + str(TRAIN_START_IDX) + "_" + str(TRAIN_START_IDX+TRAIN_LEN) + ".log"
+train_log_str = 'train_${START_FRAME}_${END_FRAME}.log'
 
 video_path = os.path.join(VIDEO_DIR_PREFIX, video_name+'.mp4')
 
@@ -180,13 +180,13 @@ for cnn, dd in pipelines:
         print pipeline_path, "already exists"
 
     train_csv_path = os.path.join(
-        pipeline_path, 
-        train_csv_filename
+        pipeline_path,
+        train_csv_str
     )
 
     train_log_path = os.path.join(
-        pipeline_path, 
-        train_log_filename
+        pipeline_path,
+        train_log_str
     )
 
     use_blocked = 0
@@ -245,9 +245,11 @@ summary_file.flush()
 label_name = LABELS[yolo_label_num]
 truth_csv = os.path.join(TRUTH_DIR_PREFIX, video_name+'.csv')
 
-test_csv_filename =  "test_" + str(TEST_START_IDX) + "_" + str(TEST_START_IDX+TEST_LEN) + ".csv"
+# test_csv_filename =  "test_" + str(TEST_START_IDX) + "_" + str(TEST_START_IDX+TEST_LEN) + ".csv"
+test_csv_str =  'test_${START_FRAME}_${END_FRAME}.csv'
 
-test_log_filename = "test_" + str(TEST_START_IDX) + "_" + str(TEST_START_IDX+TEST_LEN) + ".log"
+# test_log_filename = "test_" + str(TEST_START_IDX) + "_" + str(TEST_START_IDX+TEST_LEN) + ".log"
+test_log_str = 'test_${START_FRAME}_${END_FRAME}.log'
 
 video_cache_id = uuid.uuid4()
 for error_rate in TARGET_ERROR_RATES:        
@@ -289,12 +291,12 @@ for error_rate in TARGET_ERROR_RATES:
     # run the actual experiment
     test_csv_path = os.path.join(
         test_path, 
-        test_csv_filename
+        test_csv_str
     )
 
     test_log_path = os.path.join(
         test_path, 
-        test_log_filename
+        test_log_str
     )
 
     with open( os.path.join(test_path, 'params.json'), 'w') as f:
