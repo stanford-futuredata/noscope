@@ -75,11 +75,11 @@ TRAIN_LEN = 100000
 TEST_START_IDX = 250000
 TEST_LEN = 300000
 
-TF_DIRPREFIX = '/root/tensorflow-noscope'
-DATA_DIR_PREFIX = '/root/noscope-data'
-EXPERIMENTS_DIR_PREFIX = '/root/noscope-experiments'
+TF_DIRPREFIX = '/lfs/1/ddkang/noscope/tensorflow-noscope/'
+DATA_DIR_PREFIX = '/lfs/1/ddkang/noscope/data/'
+EXPERIMENTS_DIR_PREFIX = '/lfs/1/ddkang/noscope/experiments/'
 VIDEO_DIR_PREFIX = os.path.join(DATA_DIR_PREFIX, 'videos')
-VIDEO_CACHE_PREFIX = '/dfs/ddkang/vid-cache'
+VIDEO_CACHE_PREFIX = '/root/infolab/ddkang/vid-cache/'
 TRUTH_DIR_PREFIX = os.path.join(DATA_DIR_PREFIX, 'csv')
 
 DD_MEAN_DIR_PREFIX = os.path.join(DATA_DIR_PREFIX, 'dd-means')
@@ -235,7 +235,7 @@ summary_file.write('target_fn, target_fp, skip_dd, skip_cnn, dd, dd_thres, cnn, 
 summary_file.flush()
 
 label_name = LABELS[yolo_label_num]
-truth_csv = os.path.join(TRUTH_DIR_PREFIX, video_name+'.mp4.csv.commented')
+truth_csv = os.path.join(TRUTH_DIR_PREFIX, video_name+'.csv')
 
 test_csv_filename =  "test_" + str(TEST_START_IDX) + "_" + str(TEST_START_IDX+TEST_LEN) + ".csv"
 

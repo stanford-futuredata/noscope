@@ -7,6 +7,8 @@ import json
 import sys
 import os
 import timeit
+import csv
+from collections import namedtuple
 
 DIRNAME = os.path.dirname(os.path.realpath(__file__))
 
@@ -25,7 +27,27 @@ def strip_comment_lines(lines):
     return lines
 
 def parse_yolo_csv(f, label, start, end):
-    file_lines = strip_comment_lines( f.read().strip().split('\n') )
+    # Pandas crashes with multiprocessing so use the CSV
+    f.readline() # Skip the header
+    reader = csv.reader(f)
+    rows = []
+    for row in reader:
+        # frame,object_name,confidence,xmin,ymin,xmax,ymax
+        rows.append( (int(row[0]), row[1]) )
+
+    rows = filter(lambda row: row[0] >= start and row[0] < end, rows)
+    rows = filter(lambda row: row[1] == label, rows)
+    frames = set(map(lambda row: row[0], rows))
+
+    nt = namedtuple('Obj', ['frame', 'object', 'confidence'])
+    frame_objs = []
+    for i in xrange(start, end):
+        if i in frames:
+            frame_objs.append(nt(i, label, 1))
+        else:
+            frame_objs.append(nt(i, label, 0))
+    return frame_objs
+    '''file_lines = strip_comment_lines( f.read().strip().split('\n') )
     
     if( start != 0 or end != len(file_lines) ):
         sys.stdout.write('WARNING: computing accuracy with respect to ground truth frames {} to {}\n'.format(start, end))
@@ -67,7 +89,7 @@ def parse_yolo_csv(f, label, start, end):
         frame_objects_final.append(best_obj)
     
     # print '\n'.join(map(str, frame_objects_final[1600:1630]))
-    return frame_objects_final
+    return frame_objects_final'''
     
 def parse_noscope_csv(f, label, start=TEST_START_IDX, end=TEST_END_IDX):
     lines = f.read().strip().split('\n')
@@ -172,7 +194,7 @@ def smooth_indicator(indicator):
     return np.asarray( indicator_smooth )
 
 def window_yolo(frames):
-    true_indicator = np.asarray( map(lambda x: int(x['confidence'] > YOLO_CONFIDENCE), frames) )
+    true_indicator = np.asarray( map(lambda x: int(x.confidence > YOLO_CONFIDENCE), frames) )
     
     # smooth and window the yolo labels
     return smooth_indicator(true_indicator)

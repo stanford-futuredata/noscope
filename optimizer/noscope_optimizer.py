@@ -20,7 +20,6 @@ TRAIN_END_IDX = 250000 # inclusive
 GRID_SIZE = 1000
 
 def cnn_param_grid_search(p):
-
     # unpack the params 
     yolo_indicator, video_stats, diff_thres, diff_mask, cnn_confidences, cnn_confidences_range, TARGET_CNN_FALSE_NEGATIVE_RATE, TARGET_CNN_FALSE_POSITIVE_RATE, MAX_DIFF_FALSE_NEGATIVE_RATE = p
 
