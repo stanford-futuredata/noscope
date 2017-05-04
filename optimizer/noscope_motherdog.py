@@ -179,9 +179,13 @@ for cnn, dd in pipelines:
     except:
         print pipeline_path, "already exists"
 
-    train_csv_path = os.path.join(
+    train_csv_path_str = os.path.join(
         pipeline_path,
         train_csv_str
+    )
+    train_csv_path = os.path.join(
+        pipeline_path,
+        train_csv_filename
     )
 
     train_log_path = os.path.join(
@@ -218,7 +222,7 @@ for cnn, dd in pipelines:
             yolo_class=yolo_label_num,
             start=TRAIN_START_IDX,
             length=TRAIN_LEN,
-            output_csv=train_csv_path,
+            output_csv=train_csv_path_str,
             output_log=train_log_path,
             dumped_videos='/dev/null'
         )
@@ -245,7 +249,7 @@ summary_file.flush()
 label_name = LABELS[yolo_label_num]
 truth_csv = os.path.join(TRUTH_DIR_PREFIX, video_name+'.csv')
 
-# test_csv_filename =  "test_" + str(TEST_START_IDX) + "_" + str(TEST_START_IDX+TEST_LEN) + ".csv"
+test_csv_filename =  "test_" + str(TEST_START_IDX) + "_" + str(TEST_START_IDX+TEST_LEN) + ".csv"
 test_csv_str =  'test_${START_FRAME}_${END_FRAME}.csv'
 
 # test_log_filename = "test_" + str(TEST_START_IDX) + "_" + str(TEST_START_IDX+TEST_LEN) + ".log"
@@ -289,9 +293,13 @@ for error_rate in TARGET_ERROR_RATES:
     video_cache_filename = os.path.join(VIDEO_CACHE_PREFIX, str(video_cache_id) + "_" + str(best_params['threshold_skip_distance']) + ".mp4.raw")
     
     # run the actual experiment
-    test_csv_path = os.path.join(
+    test_csv_path_str = os.path.join(
         test_path, 
         test_csv_str
+    )
+    test_csv_path = os.path.join(
+        test_path,
+        test_csv_filename
     )
 
     test_log_path = os.path.join(
@@ -323,7 +331,7 @@ for error_rate in TARGET_ERROR_RATES:
             yolo_class=yolo_label_num,
             start=TEST_START_IDX,
             length=TEST_LEN,
-            output_csv=test_csv_path,
+            output_csv=test_csv_path_str,
             output_log=test_log_path,
             dumped_videos=video_cache_filename
         )
