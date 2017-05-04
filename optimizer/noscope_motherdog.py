@@ -22,6 +22,10 @@ fi
 
 export CUDA_VISIBLE_DEVICES="$1"
 
+START_FRAME={start}
+LEN={length}
+END_FRAME=$((START_FRAME + LEN))
+
 time {tf_prefxix}/bazel-bin/tensorflow/noscope/noscope \\
     --diff_thresh={dd_thres} \\
     --distill_thresh_lower={cnn_lower_thres} \\
@@ -36,8 +40,8 @@ time {tf_prefxix}/bazel-bin/tensorflow/noscope/noscope \\
     --yolo_weights=/root/darknet_ddkang/weights/yolo.weights \\
     --yolo_class={yolo_class} \\
     --confidence_csv={output_csv} \\
-    --start_from={start} \\
-    --nb_frames={length} \\
+    --start_from=${{START_FRAME}} \\
+    --nb_frames=$LEN \\
     --dumped_videos={dumped_videos} \\
     --diff_detection_weights={diff_detection_weights} \\
     --use_blocked={use_blocked} \\
@@ -145,9 +149,11 @@ except:
 print "preparing the training data (for optimizer) and getting ground truth"
 yolo_label_num, pipelines = YOLO_LABELS[video_name]
 
-train_csv_filename =  "train_" + str(TRAIN_START_IDX) + "_" + str(TRAIN_START_IDX+TRAIN_LEN) + ".csv"
+# train_csv_filename =  "train_" + str(TRAIN_START_IDX) + "_" + str(TRAIN_START_IDX+TRAIN_LEN) + ".csv"
+train_csv_filename = 'train_${START_FRAME}_${END_FRAME}.csv'
 
-train_log_filename = "train_" + str(TRAIN_START_IDX) + "_" + str(TRAIN_START_IDX+TRAIN_LEN) + ".log"
+# train_log_filename = "train_" + str(TRAIN_START_IDX) + "_" + str(TRAIN_START_IDX+TRAIN_LEN) + ".log"
+train_log_filename = 'train_${START_FRAME}_${END_FRAME}.log'
 
 video_path = os.path.join(VIDEO_DIR_PREFIX, video_name+'.mp4')
 
