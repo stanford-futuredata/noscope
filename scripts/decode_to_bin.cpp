@@ -14,6 +14,7 @@ constexpr size_t kFrameSize_ = kResol_ * kResol_ * 3;
 int main(int argc, char** argv) {
   if (argc != 4) {
     std::cerr << "Usage: " << argv[0] << " FNAME NUM_FRAMES START_FRAME\n";
+    return 0;
   }
 
   const std::string fname(argv[1]);
@@ -45,7 +46,7 @@ int main(int argc, char** argv) {
       std::cout << i << "\n";
     }
 
-    cv::resize(frame, resized, cv::Size(kResol_, kResol_));
+    cv::resize(frame, resized, cv::Size(kResol_, kResol_), 0, 0, cv::INTER_NEAREST);
 
     memcpy(&frame_data[i * kFrameSize_], resized.data, kFrameSize_);
   }
