@@ -36,8 +36,8 @@ time {tf_prefxix}/bazel-bin/tensorflow/noscope/noscope \\
     --avg_fname={cnn_avg_path} \\
     --graph={cnn_path} \\
     --video={video_path} \\
-    --yolo_cfg=/root/darknet_ddkang/cfg/yolo.cfg \\
-    --yolo_weights=/root/darknet_ddkang/weights/yolo.weights \\
+    --yolo_cfg=/lfs/1/ddkang/noscope/darknet/cfg/yolo.cfg \\
+    --yolo_weights=/lfs/1/ddkang/noscope/darknet/weights/yolo.weights \\
     --yolo_class={yolo_class} \\
     --confidence_csv={output_csv} \\
     --start_from=${{START_FRAME}} \\
@@ -55,31 +55,84 @@ LABELS[2] = "car"
 LABELS[5] = "bus" 
 
 YOLO_LABELS = dict()
-#YOLO_LABELS["aoerc"] = (0, [("", ()), ("", ()), ("", ()), ("", ())])
-YOLO_LABELS["broadway-jackson-hole"] = (2, [("broadway-jackson-hole_mnist_128_64.pb", None), ("broadway-jackson-hole_mnist_128_64.pb", ("broadway-jackson-hole_raw_mse_lr_l2_delay10_resol50_ref-index59_num-blocks10.model", 60)), ("broadway-jackson-hole_mnist_128_16.pb", None), ("broadway-jackson-hole_mnist_128_16.pb", ("broadway-jackson-hole_raw_mse_lr_l2_delay10_resol50_ref-index59_num-blocks10.model", 60))])
-YOLO_LABELS["buffalo-meat"] = (0, [("buffalo-meat_mnist_128_32.pb", None), ("buffalo-meat_mnist_128_32.pb", ("buffalo-meat_raw_mse_lr_l2_delay10_resol100_ref-index59_num-blocks10.model", 60)), ("buffalo-meat_mnist_256_16.pb", None), ("buffalo-meat_mnist_256_16.pb", ("buffalo-meat_raw_mse_lr_l2_delay10_resol100_ref-index59_num-blocks10.model", 60))])
-#YOLO_LABELS["bytes"] = (0, [("", ()), ("", ()), ("", ()), ("", ())])
-YOLO_LABELS["buses-cars-archie-europe-rotonde"] = (2, [("buses-cars-archie-europe-rotonde_cifar10_32_2.pb", None), ("buses-cars-archie-europe-rotonde_cifar10_32_2.pb", ("buses-cars-archie-europe-rotonde_raw_mse_lr_l2_delay10_resol50_ref-index369_num-blocks10.model", 360)), ("buses-cars-archie-europe-rotonde_mnist_32_16.pb", None), ("buses-cars-archie-europe-rotonde_mnist_32_16.pb", ("buses-cars-archie-europe-rotonde_raw_mse_lr_l2_delay10_resol50_ref-index369_num-blocks10.model", 360))])
-YOLO_LABELS["coral-reef"] = (0, [("coral-reef_cifar10_256_1.pb", None), ("coral-reef_cifar10_256_1.pb", ("coral-reef_raw_mse_lr_l2_delay10_resol100_ref-index508_num-blocks10.model", 510)), ("coral-reef_mnist_128_16.pb", None), ("coral-reef_mnist_128_16.pb", ("coral-reef_raw_mse_lr_l2_delay10_resol100_ref-index508_num-blocks10.model", 510))])
-#YOLO_LABELS["coupa"] = (0, [("", ()), ("", ()), ("", ()), ("", ())])
-#YOLO_LABELS["huang"] = (0, [("", ()), ("", ()), ("", ()), ("", ())])
-YOLO_LABELS["elevator"] = (0, [("elevator_mnist_256_32.pb", None), ("elevator_mnist_256_32.pb", ("elevator_raw_mse_lr_l2_delay10_resol100_ref-index59_num-blocks10.model", 60)), ("elevator_mnist_64_16.pb", None), ("elevator_mnist_64_16.pb", ("elevator_raw_mse_lr_l2_delay10_resol100_ref-index59_num-blocks10.model", 60))])
-#YOLO_LABELS["lady-in-the-corner"] = (0, [("", ()), ("", ()), ("", ()), ("", ())]) 
-YOLO_LABELS["live-zicht-binnenhaven"] = (2, [("live-zicht-binnenhaven_mnist_256_64.pb", None), ("live-zicht-binnenhaven_mnist_256_64.pb", ("live-zicht-binnenhaven_raw_mse_lr_l2_delay10_resol50_ref-index141_num-blocks10.model", 150)), ("live-zicht-binnenhaven_mnist_128_16.pb", None), ("live-zicht-binnenhaven_mnist_128_16.pb", ("live-zicht-binnenhaven_raw_mse_lr_l2_delay10_resol50_ref-index141_num-blocks10.model", 150))]) 
-YOLO_LABELS["shibuya-halloween"] = (2, [("shibuya-halloween_mnist_64_16.pb", None), ("shibuya-halloween_mnist_64_16.pb", ("shibuya-halloween_raw_mse_lr_l2_delay10_resol50_ref-index59_num-blocks10.model", 60)), ("shibuya-halloween_cifar10_128_1.pb", None), ("shibuya-halloween_cifar10_128_1.pb", ("shibuya-halloween_raw_mse_lr_l2_delay10_resol50_ref-index59_num-blocks10.model", 60))]) 
-YOLO_LABELS["taipei"] = (5, [("taipei_cifar10_256_1.pb", None), ("taipei_cifar10_256_1.pb", ("taipei_raw_mse_lr_l2_delay10_resol50_ref-index59_num-blocks10.model", 60)), ("taipei_mnist_32_64.pb", None), ("taipei_mnist_32_64.pb", ("taipei_raw_mse_lr_l2_delay10_resol50_ref-index59_num-blocks10.model", 60))]) 
+# YOLO_LABELS["broadway-jackson-hole"] = (2, [("broadway-jackson-hole_mnist_128_64.pb", None), ("broadway-jackson-hole_mnist_128_64.pb", ("broadway-jackson-hole_raw_mse_lr_l2_delay10_resol50_ref-index59_num-blocks10.model", 60)), ("broadway-jackson-hole_mnist_128_16.pb", None), ("broadway-jackson-hole_mnist_128_16.pb", ("broadway-jackson-hole_raw_mse_lr_l2_delay10_resol50_ref-index59_num-blocks10.model", 60))])
+YOLO_LABELS["buffalo-meat"] = (
+        0,
+        [("buffalo-meat_mnist_128_32.pb", None),
+         ("buffalo-meat_mnist_128_32.pb", ("buffalo-meat_raw_mse_lr_l2_delay10_resol100_ref-index59_num-blocks10.model", 60)),
+         ("buffalo-meat_mnist_256_16.pb", None),
+         ("buffalo-meat_mnist_256_16.pb", ("buffalo-meat_raw_mse_lr_l2_delay10_resol100_ref-index59_num-blocks10.model", 60))],
+        150000,
+        100000,
+        250000 + 54000,
+        559020,
+)
+YOLO_LABELS["buses-cars-archie-europe-rotonde"] = (
+        2,
+        [("buses-cars-archie-europe-rotonde_cifar10_32_2.pb", None),
+         ("buses-cars-archie-europe-rotonde_cifar10_32_2.pb", ("buses-cars-archie-europe-rotonde_raw_mse_lr_l2_delay10_resol50_ref-index369_num-blocks10.model", 360)),
+         ("buses-cars-archie-europe-rotonde_mnist_32_16.pb", None),
+         ("buses-cars-archie-europe-rotonde_mnist_32_16.pb", ("buses-cars-archie-europe-rotonde_raw_mse_lr_l2_delay10_resol50_ref-index369_num-blocks10.model", 360))],
+        150000,
+        100000,
+        250000 + 54000,
+        731010,
+)
+# YOLO_LABELS["coral-reef"] = (0, [("coral-reef_cifar10_256_1.pb", None), ("coral-reef_cifar10_256_1.pb", ("coral-reef_raw_mse_lr_l2_delay10_resol100_ref-index508_num-blocks10.model", 510)), ("coral-reef_mnist_128_16.pb", None), ("coral-reef_mnist_128_16.pb", ("coral-reef_raw_mse_lr_l2_delay10_resol100_ref-index508_num-blocks10.model", 510))])
+YOLO_LABELS["elevator"] = (
+        0,
+        [("elevator_mnist_256_32.pb", None),
+         ("elevator_mnist_256_32.pb", ("elevator_raw_mse_lr_l2_delay10_resol100_ref-index59_num-blocks10.model", 60)),
+         ("elevator_mnist_64_16.pb", None),
+         ("elevator_mnist_64_16.pb", ("elevator_raw_mse_lr_l2_delay10_resol100_ref-index59_num-blocks10.model", 60))],
+        150000,
+        100000,
+        250000 + 54000,
+        592020,
+)
+# YOLO_LABELS["live-zicht-binnenhaven"] = (2, [("live-zicht-binnenhaven_mnist_256_64.pb", None), ("live-zicht-binnenhaven_mnist_256_64.pb", ("live-zicht-binnenhaven_raw_mse_lr_l2_delay10_resol50_ref-index141_num-blocks10.model", 150)), ("live-zicht-binnenhaven_mnist_128_16.pb", None), ("live-zicht-binnenhaven_mnist_128_16.pb", ("live-zicht-binnenhaven_raw_mse_lr_l2_delay10_resol50_ref-index141_num-blocks10.model", 150))])
+YOLO_LABELS["shibuya-halloween"] = (
+        2,
+        [("shibuya-halloween_mnist_64_16.pb", None),
+         ("shibuya-halloween_mnist_64_16.pb", ("shibuya-halloween_raw_mse_lr_l2_delay10_resol50_ref-index59_num-blocks10.model", 60)),
+         ("shibuya-halloween_cifar10_128_1.pb", None),
+         ("shibuya-halloween_cifar10_128_1.pb", ("shibuya-halloween_raw_mse_lr_l2_delay10_resol50_ref-index59_num-blocks10.model", 60))]
+)
+# YOLO_LABELS["taipei"] = (5, [("taipei_cifar10_256_1.pb", None), ("taipei_cifar10_256_1.pb", ("taipei_raw_mse_lr_l2_delay10_resol50_ref-index59_num-blocks10.model", 60)), ("taipei_mnist_32_64.pb", None), ("taipei_mnist_32_64.pb", ("taipei_raw_mse_lr_l2_delay10_resol50_ref-index59_num-blocks10.model", 60))])
+YOLO_LABELS["taipei-long"] = (
+        5,
+        [("taipei-long_cifar10_128_2.pb", None),
+         ("taipei-long_cifar10_256_0.pb", None)]
+)
+YOLO_LABELS["live-zicht-long"] = (
+        2,
+        [("live-zicht-long_cifar10_32_1.pb", None),
+         ("live-zicht-long_cifar10_64_1.pb", None),]
+)
+YOLO_LABELS["jackson-crop2"] = (
+        2,
+        [("jackson-crop2_cifar10_64_2.pb", None),
+         ("jackson-crop2_cifar10_128_0.pb", None),]
+)
+YOLO_LABELS["coral-reef-long"] = (
+        0,
+        [("coral-reef_cifar10_32_1.pb", None),
+         ("coral-reef_cifar10_32_2.pb", None),]
+)
 
 NO_CACHING = False
 
 TARGET_ERROR_RATES = [0.0, 0.005, 0.01, 0.015, 0.02, 0.03, 0.04, 0.05, 0.1, 0.25]
+# TARGET_ERROR_RATES = [0.0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.25]
+# TARGET_ERROR_RATES = [0.25, 0.1, 0.05, 0.04, 0.03, 0.02, 0.01, 0.0]
 
-TRAIN_START_IDX = 150000
-TRAIN_LEN = 100000
-TRAIN_END_IDX = TRAIN_START_IDX + TRAIN_LEN
+# TRAIN_START_IDX = 150000
+# TRAIN_LEN = 100000
+# TRAIN_END_IDX = TRAIN_START_IDX + TRAIN_LEN
 
-TEST_START_IDX = 250000
-TEST_LEN = 300000
-TEST_END_IDX = TEST_START_IDX + TEST_LEN
+# TEST_START_IDX = 250000
+# TEST_LEN = 300000
+# TEST_END_IDX = TEST_START_IDX + TEST_LEN
 
 TF_DIRPREFIX = '/lfs/1/ddkang/noscope/tensorflow-noscope/'
 DATA_DIR_PREFIX = '/lfs/1/ddkang/noscope/data/'
@@ -147,7 +200,12 @@ except:
 # get training data for the optimizer and get ground truth for accuracy
 ################################################################################
 print "preparing the training data (for optimizer) and getting ground truth"
-yolo_label_num, pipelines = YOLO_LABELS[video_name]
+yolo_label_num, pipelines, \
+    TRAIN_START_IDX, TRAIN_LEN, \
+    TEST_START_IDX, TEST_LEN = YOLO_LABELS[video_name]
+TRAIN_END_IDX = TRAIN_START_IDX + TRAIN_LEN
+TEST_END_IDX = TEST_START_IDX + TEST_LEN
+
 
 train_csv_filename =  "train_" + str(TRAIN_START_IDX) + "_" + str(TRAIN_START_IDX+TRAIN_LEN) + ".csv"
 train_csv_str = 'train_${START_FRAME}_${END_FRAME}.csv'
