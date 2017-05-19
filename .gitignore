@@ -9,6 +9,7 @@
 *.mp4
 *.webm
 *.csv
+*.pdf
 
 # setup.py files
 build

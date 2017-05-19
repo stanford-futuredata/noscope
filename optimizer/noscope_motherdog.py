@@ -59,9 +59,9 @@ YOLO_LABELS = dict()
 YOLO_LABELS["buffalo-meat"] = (
         0,
         [("buffalo-meat_mnist_128_32.pb", None),
-         ("buffalo-meat_mnist_128_32.pb", ("buffalo-meat_raw_mse_lr_l2_delay10_resol100_ref-index59_num-blocks10.model", 60)),
-         ("buffalo-meat_mnist_256_16.pb", None),
-         ("buffalo-meat_mnist_256_16.pb", ("buffalo-meat_raw_mse_lr_l2_delay10_resol100_ref-index59_num-blocks10.model", 60))],
+         #("buffalo-meat_mnist_128_32.pb", ("buffalo-meat_raw_mse_lr_l2_delay10_resol100_ref-index59_num-blocks10.model", 60)),
+         ("buffalo-meat_mnist_256_16.pb", None),],
+         #("buffalo-meat_mnist_256_16.pb", ("buffalo-meat_raw_mse_lr_l2_delay10_resol100_ref-index59_num-blocks10.model", 60))],
         150000,
         100000,
         250000 + 54000,
@@ -102,29 +102,55 @@ YOLO_LABELS["shibuya-halloween"] = (
 YOLO_LABELS["taipei-long"] = (
         5,
         [("taipei-long_cifar10_128_2.pb", None),
-         ("taipei-long_cifar10_256_0.pb", None)]
+         ("taipei-long_cifar10_256_0.pb", None)],
+        409000,
+        100000,
+        1296000,
+        1296000
 )
 YOLO_LABELS["live-zicht-long"] = (
         2,
-        [("live-zicht-long_cifar10_32_1.pb", None),
-         ("live-zicht-long_cifar10_64_1.pb", None),]
+        [("live-zicht-long_cifar10_32_0.pb", None),
+         ("live-zicht-long_cifar10_32_2.pb", None),
+         ("live-zicht-long_cifar10_64_1.pb", None),],
+        409000,
+        100000,
+        1296000,
+        1296000
 )
 YOLO_LABELS["jackson-crop2"] = (
         2,
-        [("jackson-crop2_cifar10_64_2.pb", None),
-         ("jackson-crop2_cifar10_128_0.pb", None),]
+        [("jackson-crop2_cifar10_32_1.pb", None),
+         ("jackson-crop2_cifar10_32_0.pb", None),],
+        409000,
+        100000,
+        918000,
+        918000
 )
 YOLO_LABELS["coral-reef-long"] = (
         0,
-        [("coral-reef_cifar10_32_1.pb", None),
-         ("coral-reef_cifar10_32_2.pb", None),]
+        [("coral-reef-long_cifar10_32_1.pb", None),
+         ("coral-reef-long_cifar10_32_2.pb", None),],
+        648000 + 200000,
+        100000,
+        1188000 + 648000,
+        1188000
+)
+YOLO_LABELS["whitewater"] = (
+        0,
+        [("whitewater_cifar10_32_1.pb", None),
+         ("whitewater_cifar10_32_2.pb", None),],
+        800000,
+        100000,
+        1080000,
+        1080000,
 )
 
 NO_CACHING = False
 
-TARGET_ERROR_RATES = [0.0, 0.005, 0.01, 0.015, 0.02, 0.03, 0.04, 0.05, 0.1, 0.25]
+# TARGET_ERROR_RATES = [0.0, 0.005, 0.01, 0.015, 0.02, 0.03, 0.04, 0.05, 0.1, 0.25]
 # TARGET_ERROR_RATES = [0.0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.25]
-# TARGET_ERROR_RATES = [0.25, 0.1, 0.05, 0.04, 0.03, 0.02, 0.01, 0.0]
+TARGET_ERROR_RATES = [0.25, 0.1, 0.05, 0.04, 0.03, 0.02, 0.01, 0.0]
 
 # TRAIN_START_IDX = 150000
 # TRAIN_LEN = 100000
@@ -138,7 +164,8 @@ TF_DIRPREFIX = '/lfs/1/ddkang/noscope/tensorflow-noscope/'
 DATA_DIR_PREFIX = '/lfs/1/ddkang/noscope/data/'
 EXPERIMENTS_DIR_PREFIX = '/lfs/1/ddkang/noscope/experiments/'
 VIDEO_DIR_PREFIX = os.path.join(DATA_DIR_PREFIX, 'videos')
-VIDEO_CACHE_PREFIX = '/root/infolab/ddkang/vid-cache/'
+# VIDEO_CACHE_PREFIX = os.path.join(DATA_DIR_PREFIX, 'video-cache')
+VIDEO_CACHE_PREFIX = '/lfs/0/ddkang/noscope/data/video-cache/'
 TRUTH_DIR_PREFIX = os.path.join(DATA_DIR_PREFIX, 'csv')
 
 DD_MEAN_DIR_PREFIX = os.path.join(DATA_DIR_PREFIX, 'dd-means')
@@ -177,6 +204,11 @@ if( video_name not in YOLO_LABELS.keys() ):
         print "\t", v
     print
     sys.exit(1)
+
+# FIXME
+if 'long' in video_name or 'crop2' in video_name or \
+        'whitewater' in video_name:
+    CNN_MODEL_DIR_PREFIX = '/lfs/1/ddkang/noscope/model-search/'
 
 experiment_dir = os.path.join(EXPERIMENTS_DIR_PREFIX, video_name)
 if( os.path.exists(experiment_dir) ):
@@ -261,6 +293,10 @@ for cnn, dd in pipelines:
 
     run_optimizer_script = os.path.join(pipeline_path, RUN_OPTIMIZER_SCRIPT_FILENAME)
 
+    video_cache_filename = os.path.join(
+            VIDEO_CACHE_PREFIX,
+            '%s_%d_%d_%d.bin' % (video_name, TRAIN_START_IDX, TRAIN_LEN, 1))
+
     with open(run_optimizer_script, 'w') as f:
         script = RUN_BASH_SCRIPT.format(
             date=str(datetime.datetime.now()),
@@ -282,7 +318,7 @@ for cnn, dd in pipelines:
             length=TRAIN_LEN,
             output_csv=train_csv_path_str,
             output_log=train_log_path,
-            dumped_videos='/dev/null'
+            dumped_videos=video_cache_filename
         )
 
         f.write(script)
@@ -348,7 +384,11 @@ for error_rate in TARGET_ERROR_RATES:
 
     best_params = sorted(params_list, key=lambda x: x['optimizer_cost'])[0]
     
-    video_cache_filename = os.path.join(VIDEO_CACHE_PREFIX, str(video_cache_id) + "_" + str(best_params['threshold_skip_distance']) + ".mp4.raw")
+    # video_cache_filename = os.path.join(VIDEO_CACHE_PREFIX, str(video_cache_id) + "_" + str(best_params['threshold_skip_distance']) + ".mp4.raw")
+    video_cache_filename = os.path.join(
+            VIDEO_CACHE_PREFIX,
+            '%s_%d_%d_%d.bin' % (video_name, TEST_START_IDX, TEST_LEN,
+                                 best_params['threshold_skip_distance']))
     
     # run the actual experiment
     test_csv_path_str = os.path.join(
