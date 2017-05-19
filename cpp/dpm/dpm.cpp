@@ -9,14 +9,22 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <fstream>
 
 using namespace cv::dpm;
 
-int main(int argc, char** argv) {
-	cv::Ptr<DPMDetector> detector = DPMDetector::create(
-      std::vector<std::string>(1, "bus.xml"));
+constexpr size_t kNbFrames = 10000;
+constexpr size_t kSkip = 30;
 
-  cv::VideoCapture capture("/lfs/1/ddkang/noscope/data/videos/taipei-long.mp4");
+
+int main(int argc, char** argv) {
+  std::string xml_fname = "person.xml";
+  std::string video_fname = "/lfs/1/ddkang/noscope/data/videos/elevator.mp4";
+
+  cv::Ptr<DPMDetector> detector = DPMDetector::create(
+      std::vector<std::string>(1, xml_fname));
+
+  cv::VideoCapture capture(video_fname);
 	// capture.set(CV_CAP_PROP_FRAME_WIDTH, 320);
 	// capture.set(CV_CAP_PROP_FRAME_HEIGHT, 240);
 
@@ -35,14 +43,19 @@ int main(int argc, char** argv) {
 #endif
 #endif
 
-  constexpr int kNbFrames = 100;
+  std::ofstream csv_file("elevator.csv", std::ofstream::out);
+
   double total_time = 0;
   cv::Mat frame;
-  for (int i = 0; i < kNbFrames; i++) {
-    const bool read_frame = capture.read(frame);
-    if (!read_frame) {
-      throw std::runtime_error("Failed to read frame.");
-      return -1;
+  size_t cur_frame = 0;
+  for (size_t i = 0; i < kNbFrames; i++) {
+    for (size_t j = 0; j < kSkip; j++) {
+      const bool read_frame = capture.read(frame);
+      if (!read_frame) {
+        throw std::runtime_error("Failed to read frame.");
+        return -1;
+      }
+      cur_frame++;
     }
 
     std::vector<DPMDetector::ObjectDetection> ds;
@@ -53,6 +66,13 @@ int main(int argc, char** argv) {
     double t = (double) cv::getTickCount();
     detector->detect(image, ds);
     t = ((double) cv::getTickCount() - t) / cv::getTickFrequency(); //elapsed time
+
+    // FIXME
+    if (ds.size() > 0) {
+      csv_file << cur_frame << ",1\n";
+    } else {
+      csv_file << cur_frame << ",0\n";
+    }
 
     total_time += t;
   }
