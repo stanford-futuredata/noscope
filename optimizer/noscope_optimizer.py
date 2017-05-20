@@ -11,9 +11,6 @@ import os
 DIRNAME = os.path.dirname(os.path.realpath(__file__))
 POOL_SIZE = 48
 
-# TARGET_CNN_FALSE_NEGATIVE_RATE = None
-# TARGET_CNN_FALSE_POSITIVE_RATE = None
-# MAX_DIFF_FALSE_NEGATIVE_RATE = None
 GRID_SIZE = 1000
 
 def cnn_param_grid_search(p):
@@ -50,13 +47,6 @@ def cnn_param_grid_search(p):
 
     if( upper_idx != len(fp)-1 ):
         upper_idx = upper_idx + 1
-
-    # print lower_idx, upper_idx
-    # if (lower_idx != len(fn) - 1 and TARGET_CNN_FALSE_NEGATIVE_RATE - fn[lower_idx] > fn[lower_idx+1] - TARGET_CNN_FALSE_NEGATIVE_RATE):
-    #     lower_idx = lower_idx + 1
-    
-    # if (upper_idx != len(fp) - 1 and fp[upper_idx] - TARGET_CNN_FALSE_POSITIVE_RATE > TARGET_CNN_FALSE_POSITIVE_RATE - fp[upper_idx+1]):
-    #     upper_idx = upper_idx + 1
 
     # if the lower and upper bound cross, pick a point in the middle
     if (lower_idx > upper_idx):

@@ -36,7 +36,7 @@ def parse_yolo_csv(f, label, start, end):
     rows = filter(lambda row: row[1] == label, rows)
     frames = set(map(lambda row: row[0], rows))
 
-    nt = namedtuple('Obj', ['frame', 'object', 'confidence'])
+    nt = namedtuple('YoloObj', ['frame', 'object', 'confidence'])
     frame_objs = []
     for i in xrange(start, end):
         if i in frames:
@@ -44,49 +44,6 @@ def parse_yolo_csv(f, label, start, end):
         else:
             frame_objs.append(nt(i, label, 0))
     return frame_objs
-    '''file_lines = strip_comment_lines( f.read().strip().split('\n') )
-    
-    if( start != 0 or end != len(file_lines) ):
-        sys.stdout.write('WARNING: computing accuracy with respect to ground truth frames {} to {}\n'.format(start, end))
-
-    file_lines = file_lines[start:end]
-
-    # get objects
-    default_object = {'confidence':0.0, 'object_name':label}
-    frame_objects_str = None
-
-    frame_objects_str = []
-    for line in file_lines:
-        try:
-            frame_objects_str.append( (int(line.split(',')[0]), line.split('"')[1]) ) 
-        except:
-            print line 
-            raise line
-
-    frame_objects = map(lambda x: (x[0], eval(x[1])), frame_objects_str )
-
-    frame_objects_final = []
-    for frame_num, objs in frame_objects:
-        best_confidence = 0.0
-        best_obj = dict.copy(default_object)
-        best_obj['frame_num'] = frame_num
-
-        
-        for obj in objs:
-            try:
-                if (obj['object_name'] == label and obj['confidence'] > best_confidence):
-                    obj['frame_num'] = frame_num
-                    best_obj = obj
-                    best_confidence = obj['confidence']
-                    
-            except:
-                print obj
-                raise obj
-
-        frame_objects_final.append(best_obj)
-    
-    # print '\n'.join(map(str, frame_objects_final[1600:1630]))
-    return frame_objects_final'''
     
 def parse_noscope_csv(f, label, start, end):
     lines = f.read().strip().split('\n')
