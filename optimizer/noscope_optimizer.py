@@ -22,6 +22,7 @@ def cnn_param_grid_search(p):
     # grid search over the cnn_confidences and get the accruacy dict from v.*
     thresholds = np.linspace(cnn_confidences_range[0], cnn_confidences_range[1], GRID_SIZE)
     accuracies = []
+    diff_sum = np.sum(diff_mask)
     for thres in thresholds:
         cnn_indicator = cnn_confidences >= thres
         noscope_indicator = diff_mask & cnn_indicator
@@ -29,7 +30,8 @@ def cnn_param_grid_search(p):
         acc = v.accuracy(yolo_indicator, noscope_indicator)
         acc['threshold_skip_distance'] = video_stats['skip_distance']
         acc['num_diff_evals'] = video_stats['num_frames'] - video_stats['num_skipped_frames']
-        acc['num_cnn_evals'] = np.sum( np.repeat(diff_mask, v.WINDOW_SIZE)[::video_stats['skip_distance']] ) - (v.WINDOW_SIZE - ((TRAIN_END_IDX - TRAIN_START_IDX) % v.WINDOW_SIZE))
+        acc['num_cnn_evals'] = diff_sum * (v.WINDOW_SIZE // video_stats['skip_distance']) - \
+            (v.WINDOW_SIZE - ((TRAIN_END_IDX - TRAIN_START_IDX) % v.WINDOW_SIZE))
         acc['skip_dd'] = False
         acc['skip_cnn'] = False
         accuracies.append( acc )
