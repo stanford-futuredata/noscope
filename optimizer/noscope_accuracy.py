@@ -200,17 +200,21 @@ def accuracy(yolo_indicator, noscope_indicator):
     false_positives = difference_indicator == 1
     false_negatives = difference_indicator == -1
 
-    error_rate = np.sum( np.abs(difference_indicator) ) / len(difference_indicator)
-    false_positive_rate = np.sum(false_positives) / (len(yolo_indicator) - np.sum(yolo_indicator))
-    false_negative_rate = np.sum(false_negatives) / np.sum(yolo_indicator)
+    yolo_sum = np.sum(yolo_indicator)
+    nb_fp = np.sum(false_positives)
+    nb_fn = np.sum(false_negatives)
+
+    error_rate = (nb_fp + nb_fp) / len(difference_indicator)
+    false_positive_rate = nb_fp / (len(yolo_indicator) - yolo_sum)
+    false_negative_rate = nb_fn / yolo_sum
     
     # report the results
     results = dict()
     results['accuracy'] = 1 - error_rate
     results['false_positive'] = false_positive_rate
     results['false_negative'] = false_negative_rate
-    results['num_true_positives'] = np.sum(yolo_indicator)
-    results['num_true_negatives'] = len(yolo_indicator) - np.sum(yolo_indicator)
+    results['num_true_positives'] = yolo_sum
+    results['num_true_negatives'] = len(yolo_indicator) - yolo_sum
     results['num_windows'] = len(yolo_indicator)
     results['window_size'] = WINDOW_SIZE
     results['window_thres'] = WINDOW_THRES

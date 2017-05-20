@@ -23,17 +23,20 @@ def cnn_param_grid_search(p):
     thresholds = np.linspace(cnn_confidences_range[0], cnn_confidences_range[1], GRID_SIZE)
     accuracies = []
     diff_sum = np.sum(diff_mask)
+    base_stats = {
+            'threshold_skip_distance': video_stats['skip_distance'],
+            'num_diff_evals': video_stats['num_frames'] - video_stats['num_skipped_frames'],
+            'num_cnn_evals': diff_sum * (v.WINDOW_SIZE // video_stats['skip_distance']) - \
+                (v.WINDOW_SIZE - ((TRAIN_END_IDX - TRAIN_START_IDX) % v.WINDOW_SIZE)),
+            'skip_dd': False,
+            'skip_cnn': False,
+    }
     for thres in thresholds:
         cnn_indicator = cnn_confidences >= thres
         noscope_indicator = diff_mask & cnn_indicator
-        
+
         acc = v.accuracy(yolo_indicator, noscope_indicator)
-        acc['threshold_skip_distance'] = video_stats['skip_distance']
-        acc['num_diff_evals'] = video_stats['num_frames'] - video_stats['num_skipped_frames']
-        acc['num_cnn_evals'] = diff_sum * (v.WINDOW_SIZE // video_stats['skip_distance']) - \
-            (v.WINDOW_SIZE - ((TRAIN_END_IDX - TRAIN_START_IDX) % v.WINDOW_SIZE))
-        acc['skip_dd'] = False
-        acc['skip_cnn'] = False
+        acc.update(base_stats)
         accuracies.append( acc )
 
     # identify the sets of params that most closely match the target fp and fn rates
