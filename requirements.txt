@@ -1,0 +1,10 @@
+numpy
+scipy
+pandas
+sklearn
+scikit-image
+matplotlib
+tensorflow-gpu
+keras
+pathos
+h5py

@@ -7,7 +7,6 @@ from os.path import join as pjoin
 import os
 import glob
 import subprocess
-import numpy
 
 
 setup(name='noscope',
@@ -16,4 +15,4 @@ setup(name='noscope',
       author='Daniel Kang',
       author_email='ddkang@stanford.edu',
       packages=['noscope'],
-      install_requires=['numpy'])
+      install_requires=open('requirements.txt').read().split('\n'))

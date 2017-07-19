@@ -63,8 +63,8 @@ def get_binary(csv_fname, OBJECTS=['person'], limit=None, start=0, WINDOW=30):
     counts = np.array(counts)
 
     smoothed_counts = np.convolve(np.ones(WINDOW), np.ravel(counts), mode='same') > WINDOW * 0.7
+    print np.sum(smoothed_counts != counts), np.sum(smoothed_counts)
     smoothed_counts = smoothed_counts.reshape(len(counts), 1)
-    print np.sum(smoothed_counts != counts)
     counts = smoothed_counts
     return counts
 
