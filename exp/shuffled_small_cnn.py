@@ -5,7 +5,7 @@ import pandas as pd
 import noscope
 from noscope import np_utils
 
-def to_test_train(all_frames, all_counts, train_ratio=0.6):
+def to_test_train(avg_fname, all_frames, all_counts, train_ratio=0.6):
     print all_frames.shape
     assert len(all_frames) == len(all_counts), 'Frame length should equal counts length'
 
@@ -13,7 +13,7 @@ def to_test_train(all_frames, all_counts, train_ratio=0.6):
     X = all_frames
 
     mean = np.mean(X, axis=0)
-    np.save('avg.npy', mean)
+    np.save(avg_fname, mean)
 
     N = 150000
     # N = 500000
@@ -47,7 +47,7 @@ def to_test_train(all_frames, all_counts, train_ratio=0.6):
     return X_train, X_test, Y_train, Y_test
 
 
-def get_data(csv_fname, video_fname,
+def get_data(csv_fname, video_fname, avg_fname,
              num_frames=None, start_frame=0,
              OBJECTS=['person'], resol=(50, 50),
              center=True, dtype='float32', train_ratio=0.6):
@@ -62,7 +62,7 @@ def get_data(csv_fname, video_fname,
     all_frames = noscope.VideoUtils.get_all_frames(
             len(all_counts), video_fname, scale=resol, start=start_frame)
     print '\tSplitting data into training and test sets'
-    X_train, X_test, Y_train, Y_test = to_test_train(all_frames, all_counts)
+    X_train, X_test, Y_train, Y_test = to_test_train(avg_fname, all_frames, all_counts)
 
     nb_classes = all_counts.max() + 1
     print '(train) positive examples: %d, total examples: %d' % \
@@ -87,6 +87,7 @@ def main():
     parser.add_argument('--output_dir', required=True, help='Output directory')
     parser.add_argument('--base_name', required=True, help='Base output name')
     parser.add_argument('--objects', required=True, help='Objects to classify. Comma separated')
+    parser.add_argument('--avg_fname', required=True)
     parser.add_argument('--num_frames', type=int, help='Number of frames')
     parser.add_argument('--start_frame', type=int)
     args = parser.parse_args()
@@ -102,7 +103,7 @@ def main():
 
     print 'Preparing data....'
     data, nb_classes = get_data(
-            args.csv_in, args.video_in,
+            args.csv_in, args.video_in, args.avg_fname,
             num_frames=args.num_frames,
             start_frame=args.start_frame,
             OBJECTS=objects,
