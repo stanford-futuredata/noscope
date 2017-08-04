@@ -1,6 +1,8 @@
 # NoScope
 
-This is the official project page for the [NoScope](https://arxiv.org/abs/1703.02529) project.
+This is the official project page for the NoScope project.
+
+Please read the [blog post](http://dawn.cs.stanford.edu/2017/06/22/noscope/) and [paper](https://arxiv.org/abs/1703.02529) for more details!
 
 
 # Requirements
