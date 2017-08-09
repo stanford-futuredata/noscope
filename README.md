@@ -14,6 +14,7 @@ You will need the following installed:
 - python-setuptools python-tk
 - CUDA, CUDNN
 - tensorflow-gpu, OpenCV 3.2 with FFmpeg bindings
+- g++ 5.4 or later
 
 Your machine will need at least:
 - AVX2 capabilities
