@@ -2,6 +2,14 @@
 CODE_DIR="/home/daniel_d_kang/code/"
 DATA_DIR="/home/daniel_d_kang/data/"
 
+# Move this down to run jackson-town-square
+VIDEO_NAME="jackson-town-square"
+OBJECT="car"
+NUM_FRAMES="918000"
+START_FRAME="0"
+GPU_NUM="0"
+
+
 VIDEO_NAME="coral-reef-long"
 OBJECT="person"
 NUM_FRAMES="1188000"
