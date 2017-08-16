@@ -55,3 +55,12 @@ wget https://storage.googleapis.com/noscope-data/videos/coral-reef-long.mp4
 
 You will need to update the `code` and `data` paths in run.sh. Additionally, you will need to update
 `noscope_motherdog.py` to point to the YOLO configuration files and weights.
+
+
+# Datasets
+The datasets that are currently available are `coral-reef-long` and `jackson-town-square`.
+
+The mp4 video files are available at `https://storage.googleapis.com/noscope-data/videos/VIDEO_NAME.mp4`
+
+The CSVs with ground truth labels are available at
+`https://storage.googleapis.com/noscope-data/csvs-yolo/VIDEO_NAME.csv`
