@@ -43,7 +43,7 @@ python $CODE_DIR/noscope/exp/to_avg.py \
 
 # Run the inference
 rm -r $DATA_DIR/experiments/$VIDEO_NAME
-python noscope_motherdog.py \
+python $CODE_DIR/noscope/examples/noscope_motherdog.py \
   --code_dir $CODE_DIR \
   --data_dir $DATA_DIR \
   --video_name $VIDEO_NAME \
