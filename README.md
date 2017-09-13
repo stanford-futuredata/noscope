@@ -88,7 +88,7 @@ Note that you will need to make the weights folder.
 6. Update example/noscope_motherdog.py to point to the YOLO configuration and weights files. The config
 file is tensorflow-noscope/tensorflow/noscope/darknet/cfg/yolo.cfg and the weights file is the one you
 downloaded. If you put the weights file in the suggested location, this step should be unnecessary.
-
+7. Run example/run.sh. The outputted summary.csv will be in the location data/experiments/$VIDEO_NAME.
 
 # Datasets
 The datasets that are currently available are `coral-reef-long` and `jackson-town-square`.
