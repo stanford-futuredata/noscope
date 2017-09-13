@@ -28,9 +28,8 @@ Your machine will need at least:
 - python 2.7 - For Linux, use your package manager. For Mac: http://docs.python-guide.org/en/latest/starting/install/osx/.
 - pip python-setuptools python-tk - https://packaging.python.org/tutorials/installing-packages/
 - CUDA, CUDNN, tensorflow-gpu
-  - https://www.tensorflow.org/versions/r1.0/install/install_linux - specifies which cuda and cudnn versions to use for the version of TensorFlow used in this project.
-  - https://www.tensorflow.org/versions/r0.12/get_started/os_setup - provides easier-to-follow instructions for installating tensorflow, tensorflow-gpu, and cuDNN. Go to the section **Download and Install cuDNN** for cuDNN installation instructions.
-  - Note: If you see an error message about being unable to find libcudnn.so.6 when running tensorflow, then you are encountering a compatibility issue where the latest version of tensorflow requires cuDNN 6.0 but NoScope requires cudnn 5.1. To fix this, install the libraries for cuCDNN 6.0 first, then the cuDNN 5.1 libraries in the same place. This will make the default cuDNN 5.1 (which you need to compile noscope) but will have the 6.0 bindings present so that the tensorflow python libraries work.
+  - https://www.tensorflow.org/versions/r0.12/get_started/os_setup - YOU MUST INSTALL THESE VERSIONS, not more recent ones. Go to the section **Download and Install cuDNN** for cuDNN installation instructions.
+  - Note: Having both TensorFlow-gpu 0.12 and more recent versions installed is complicated. It may not be easy to have the multiple versions of cuDNN installed. This project requires cuDNN 5.1 and more recent versions of TensorFlow will break with that installed. Therefore, it is recommended that users uninstall more recent versions of tensorflow and delete the cuDNN so files if they are installed.
 - OpenCV 3.2 with FFmpeg bindings - https://github.com/BVLC/caffe/wiki/OpenCV-3.2-Installation-Guide-on-Ubuntu-16.04
 - g++ 5.4 or later - For Linux, use your package manager. For Mac, http://braumeister.org/formula/gcc@5 should work, though the developers haven't tested this.
 
