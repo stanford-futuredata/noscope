@@ -13,6 +13,7 @@ This repository contains the code for the optimization step in the paper. The in
 You will need the following installed:
 - python 2.7
 - pip python-setuptools python-tk
+- keras
 - CUDA, CUDNN, tensorflow-gpu
 - OpenCV 3.2 with FFmpeg bindings
 - g++ 5.4 or later
@@ -27,6 +28,7 @@ Your machine will need at least:
 
 - python 2.7 - For Linux, use your package manager. For Mac: http://docs.python-guide.org/en/latest/starting/install/osx/.
 - pip python-setuptools python-tk - https://packaging.python.org/tutorials/installing-packages/
+- Install version 1.2 of keras, as it must interface with TensorFlow 0.12 - pip install keras==1.2
 - CUDA, CUDNN, tensorflow-gpu
   - https://www.tensorflow.org/versions/r0.12/get_started/os_setup - YOU MUST INSTALL THESE VERSIONS, not more recent ones. Go to the section **Download and Install cuDNN** for cuDNN installation instructions.
   - Note: Having both TensorFlow-gpu 0.12 and more recent versions installed is complicated. It may not be easy to have the multiple versions of cuDNN installed. This project requires cuDNN 5.1 and more recent versions of TensorFlow will break with that installed. Therefore, it is recommended that users uninstall more recent versions of tensorflow and delete the cuDNN so files if they are installed.
