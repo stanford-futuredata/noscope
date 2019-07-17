@@ -91,7 +91,7 @@ downloaded. If you put the weights file in the suggested location, this step sho
 7. Run example/run.sh. The outputted summary.csv will be in the location data/experiments/$VIDEO_NAME.
 
 # Datasets
-The datasets that are currently available are `coral-reef-long` and `jackson-town-square`.
+The datasets that are currently available are `coral-reef-long` and `jackson-town-square`. Due to the expense of hosting these files, we have turned on requester pays for download. Please use an authenticated `gsutil` to download the files.
 
 The mp4 video files are available at `https://storage.googleapis.com/noscope-data/videos/VIDEO_NAME.mp4`
 
