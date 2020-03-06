@@ -97,3 +97,5 @@ The mp4 video files are available at `https://storage.googleapis.com/noscope-dat
 
 The CSVs with ground truth labels are available at
 `https://storage.googleapis.com/noscope-data/csvs-yolo/VIDEO_NAME.csv`
+
+If the above links do not work, you can download the data on Google drive [here](https://drive.google.com/drive/folders/1znFWgDNH_rxof-ZTYHd_gwZR8iwY771t?usp=sharing).
